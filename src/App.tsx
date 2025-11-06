@@ -68,16 +68,16 @@ export default function OnePagerSite() {
   const productCategories = [
     {
       name: "Muebles",
-      icon: "🪑",
+      icon: "",
       models: [
         {
           title: "Llanta 1",
           description:
-            "Una silla de oficina ergonómica diseñada para máxima comodidad durante largas horas de trabajo. Cuenta con soporte lumbar ajustable y material de malla transpirable.",
+            "Llanta para tractor premium de la casa, con un diametro de 2mts",
           modelUrl: `${process.env.PUBLIC_URL}/models/llanta3.glb`,
           pdfUrl: "#",
           bullets: [
-            "Altura y reposabrazos ajustables",
+            "Alta calidad de material",
             "Base giratoria 360° con ruedas suaves",
             "Acabado de espuma de alta densidad",
           ],
@@ -97,13 +97,13 @@ export default function OnePagerSite() {
         {
           title: "Llanta 3",
           description:
-            "Sofá modular versátil que puede configurarse en múltiples disposiciones. Cuenta con tela premium y cojines de espuma con memoria.",
+            "Llanta modular versátil que puede configurarse en múltiples disposiciones. Cuenta con calidad premium y cojines de espuma con memoria.",
           modelUrl: `${process.env.PUBLIC_URL}/models/llanta3.glb`,
           pdfUrl: "#",
           bullets: [
             "Diseño modular con múltiples configuraciones",
             "Fundas extraíbles y lavables",
-            "Cojines de asiento de espuma con memoria",
+            "Forma de espuma con memoria",
           ],
         },
       ],
