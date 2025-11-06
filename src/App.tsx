@@ -67,7 +67,7 @@ export default function OnePagerSite() {
 
   const productCategories = [
     {
-      name: "Muebles",
+      name: "Llantas",
       icon: "",
       models: [
         {
@@ -109,14 +109,14 @@ export default function OnePagerSite() {
       ],
     },
     {
-      name: "Electrónicos",
-      icon: "📱",
+      name: "Médico",
+      icon: "",
       models: [
         {
-          title: "Centro de Hogar Inteligente",
+          title: " T  CABEZA RADIAL ADECUADO PARA RADIO",
           description:
-            "Unidad de control central para ecosistemas de hogares inteligentes. Compatible con control por voz e integración perfecta de dispositivos.",
-          modelUrl: "https://modelviewer.dev/shared-assets/models/Astronaut.glb",
+            "Sistema de fijación 2.0 Compatible con control por voz e integración perfecta de dispositivos.",
+          modelUrl: `${process.env.PUBLIC_URL}/models/placa1.glb`,
           pdfUrl: "#",
           bullets: [
             "Compatible con control por voz",
@@ -125,10 +125,10 @@ export default function OnePagerSite() {
           ],
         },
         {
-          title: "Auriculares Inalámbricos",
+          title: "Placa de Bloqueo",
           description:
             "Auriculares inalámbricos premium con cancelación activa de ruido y 30 horas de batería. Perfectos para música y llamadas.",
-          modelUrl: "https://modelviewer.dev/shared-assets/models/NeilArmstrong.glb",
+          modelUrl: `${process.env.PUBLIC_URL}/models/placa2.glb`,
           pdfUrl: "#",
           bullets: [
             "Cancelación activa de ruido",
@@ -137,10 +137,10 @@ export default function OnePagerSite() {
           ],
         },
         {
-          title: "Monitor para Gaming",
+          title: "Tornillo",
           description:
-            "Monitor gaming de 27 pulgadas 4K con frecuencia de actualización de 144Hz y tiempo de respuesta de 1ms. Experiencia de juego inmersiva con soporte HDR.",
-          modelUrl: "https://modelviewer.dev/shared-assets/models/RobotExpressive.glb",
+            "Descripción de un tornillo médico y tiempo de respuesta de 1ms. Experiencia de juego inmersiva con soporte HDR.",
+          modelUrl: `${process.env.PUBLIC_URL}/models/tornillo.glb`,
           pdfUrl: "#",
           bullets: [
             "Resolución 4K con HDR",
