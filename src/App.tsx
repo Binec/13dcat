@@ -385,300 +385,268 @@ export default function OnePagerSite() {
   };
 
   const CataloguePage: React.FC<{ isDark: boolean; onToggleTheme: () => void }> = ({ isDark, onToggleTheme }) => {
-    const [selectedCategory, setSelectedCategory] = useState(0);
-    const [selectedModel, setSelectedModel] = useState(0);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [searchMode, setSearchMode] = useState("current"); // mantenido para preservar estructura
+  const [selectedCategory, setSelectedCategory] = useState(0);
+  const [selectedModel, setSelectedModel] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
 
-    const searchAllModels = (term: string) => {
-      if (!term.trim()) return [] as Array<{
-        categoryIndex: number;
-        modelIndex: number;
-        category: (typeof productCategories)[number];
-        model: (typeof productCategories)[number]["models"][number];
-      }>;
+  const searchAllModels = (term: string) => {
+    if (!term.trim()) return [] as Array<{
+      categoryIndex: number;
+      modelIndex: number;
+      category: (typeof productCategories)[number];
+      model: (typeof productCategories)[number]["models"][number];
+    }>;
 
-      const results: Array<{
-        categoryIndex: number;
-        modelIndex: number;
-        category: (typeof productCategories)[number];
-        model: (typeof productCategories)[number]["models"][number];
-      }> = [];
-      for (let categoryIndex = 0; categoryIndex < productCategories.length; categoryIndex++) {
-        const category = productCategories[categoryIndex];
-        for (let modelIndex = 0; modelIndex < category.models.length; modelIndex++) {
-          const model = category.models[modelIndex];
-          if (
-            model.title.toLowerCase().includes(term.toLowerCase()) ||
-            model.description.toLowerCase().includes(term.toLowerCase()) ||
-            category.name.toLowerCase().includes(term.toLowerCase())
-          ) {
-            results.push({
-              categoryIndex,
-              modelIndex,
-              category,
-              model,
-            });
-          }
+    const results: Array<{
+      categoryIndex: number;
+      modelIndex: number;
+      category: (typeof productCategories)[number];
+      model: (typeof productCategories)[number]["models"][number];
+    }> = [];
+    
+    for (let categoryIndex = 0; categoryIndex < productCategories.length; categoryIndex++) {
+      const category = productCategories[categoryIndex];
+      for (let modelIndex = 0; modelIndex < category.models.length; modelIndex++) {
+        const model = category.models[modelIndex];
+        if (
+          model.title.toLowerCase().includes(term.toLowerCase()) ||
+          model.description.toLowerCase().includes(term.toLowerCase()) ||
+          category.name.toLowerCase().includes(term.toLowerCase())
+        ) {
+          results.push({
+            categoryIndex,
+            modelIndex,
+            category,
+            model,
+          });
         }
       }
-      return results;
-    };
+    }
+    return results;
+  };
 
-    const globalSearchResults = searchAllModels(searchTerm);
-    const hasGlobalSearchResults = searchTerm.trim() && globalSearchResults.length > 0;
+  const globalSearchResults = searchAllModels(searchTerm);
+  const hasGlobalSearchResults = searchTerm.trim() && globalSearchResults.length > 0;
 
-    const handleModelSelect = (categoryIndex: number, modelIndex: number) => {
-      setSelectedCategory(categoryIndex);
-      setSelectedModel(modelIndex);
-      setSearchTerm("");
-    };
+  const handleModelSelect = (categoryIndex: number, modelIndex: number) => {
+    setSelectedCategory(categoryIndex);
+    setSelectedModel(modelIndex);
+    setSearchTerm("");
+  };
 
-    const filteredModels = productCategories[selectedCategory].models.filter(
-      (model) =>
-        model.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        model.description.toLowerCase().includes(searchTerm.toLowerCase())
+  // CORREGIDO: Ahora guarda tanto el modelo como su índice original
+  const filteredModelsWithIndex = productCategories[selectedCategory].models
+    .map((model, originalIndex) => ({ model, originalIndex }))
+    .filter(({ model }) =>
+      model.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      model.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    return (
-      <div className={isDark ? "min-h-screen bg-gray-900 pt-32" : "min-h-screen bg-gray-100 pt-32"}>
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between fixed top-0 left-0 right-0 z-40 bg-opacity-90 backdrop-blur-md bg-gray-900 dark:bg-gray-900">
-          <button
-            onClick={() => setCurrentPage("home")}
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+  return (
+    <div className={isDark ? "min-h-screen bg-gray-900 pt-32" : "min-h-screen bg-gray-100 pt-32"}>
+      {/* Header */}
+      <div className="container mx-auto px-4 py-4 flex items-center justify-between fixed top-0 left-0 right-0 z-40 bg-opacity-90 backdrop-blur-md bg-gray-900 dark:bg-gray-900">
+        <button
+          onClick={() => setCurrentPage("home")}
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Inicio
+        </button>
+        <button
+          onClick={onToggleTheme}
+          aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+          className={
+            isDark
+              ? "p-2 rounded-full bg-gray-800 border border-gray-700 text-yellow-300 hover:bg-gray-700 transition"
+              : "p-2 rounded-full bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 transition"
+          }
+        >
+          {isDark ? (
+            <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
             </svg>
-            Inicio
-          </button>
-          <button
-            onClick={onToggleTheme}
-            aria-label={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-            className={
-              isDark
-                ? "p-2 rounded-full bg-gray-800 border border-gray-700 text-yellow-300 hover:bg-gray-700 transition"
-                : "p-2 rounded-full bg-white border border-gray-200 text-gray-700 hover:bg-gray-100 transition"
-            }
-          >
-            {isDark ? (
-              <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M10 3.22l.61 1.87a1 1 0 00.95.69h1.97l-1.6 1.16a1 1 0 00-.36 1.12l.61 1.87-1.6-1.16a1 1 0 00-1.18 0l-1.6 1.16.61-1.87a1 1 0 00-.36-1.12L6.47 5.78h1.97a1 1 0 00.95-.69L10 3.22z" />
-                <path d="M4 13a6 6 0 1112 0 6 6 0 01-12 0z" />
-              </svg>
-            )}
-          </button>
-        </div>
+          ) : (
+            <svg className="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10 3.22l.61 1.87a1 1 0 00.95.69h1.97l-1.6 1.16a1 1 0 00-.36 1.12l.61 1.87-1.6-1.16a1 1 0 00-1.18 0l-1.6 1.16.61-1.87a1 1 0 00-.36-1.12L6.47 5.78h1.97a1 1 0 00.95-.69L10 3.22z" />
+              <path d="M4 13a6 6 0 1112 0 6 6 0 01-12 0z" />
+            </svg>
+          )}
+        </button>
+      </div>
 
-        <div className="container mx-auto px-4 py-8 pt-12">
-          <h1 className={isDark ? "text-4xl md:text-5xl font-bold text-center text-white mb-12" : "text-4xl md:text-5xl font-bold text-center text-gray-900 mb-12"}>
-            Catálogo de Modelos 3D
-          </h1>
+      <div className="container mx-auto px-4 py-8 pt-12">
+        <h1 className={isDark ? "text-4xl md:text-5xl font-bold text-center text-white mb-12" : "text-4xl md:text-5xl font-bold text-center text-gray-900 mb-12"}>
+          Catálogo de Modelos 3D
+        </h1>
 
-          <div className="flex justify-center mb-12">
-            <div className="flex overflow-x-auto pb-4 scrollbar-hide max-w-full">
-              <div className="flex space-x-2 md:space-x-3">
-                {productCategories.map((category, index) => (
-                  <button
-                    key={index}
-                    onClick={() => {
-                      setSelectedCategory(index);
-                      setSelectedModel(0);
-                      setSearchTerm("");
-                    }}
-                    className={
-                      selectedCategory === index
-                        ? "flex items-center space-x-2 px-4 py-3 rounded-lg transition whitespace-nowrap bg-blue-600 text-white"
-                        : isDark
-                        ? "flex items-center space-x-2 px-4 py-3 rounded-lg transition whitespace-nowrap bg-gray-700 text-gray-300 hover:bg-gray-600"
-                        : "flex items-center space-x-2 px-4 py-3 rounded-lg transition whitespace-nowrap bg-white text-gray-700 border border-gray-200 hover:bg-gray-100"
-                    }
-                  >
-                    <span className="text-lg">{category.icon}</span>
-                    <span className="font-medium text-sm md:text-base">{category.name}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            <div className="lg:col-span-3">
-              <div className={isDark ? "bg-gray-800 rounded-xl p-6 border border-gray-700 h-full" : "bg-white rounded-xl p-6 border border-gray-200 h-full"}>
-                <div className="mb-6">
-                  <label htmlFor="search" className={isDark ? "block text-gray-300 font-medium mb-2" : "block text-gray-700 font-medium mb-2"}>
-                    Buscar Todos los Modelos
-                  </label>
-                  <input
-                    type="text"
-                    id="search"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Buscar en todas las categorías..."
-                    className={
-                      isDark
-                        ? "w-full px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-white placeholder-gray-400"
-                        : "w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-400"
-                    }
-                  />
-                  <div className="flex gap-2 mt-2">
-                    <button onClick={() => setSearchTerm("")} className={isDark ? "text-xs text-gray-400 hover:text-gray-300 transition" : "text-xs text-gray-500 hover:text-gray-700 transition"}>
-                      Limpiar Búsqueda
-                    </button>
-                  </div>
-                </div>
-
-                {hasGlobalSearchResults && (
-                  <div className="mb-6">
-                    <h3 className={isDark ? "text-lg font-semibold text-white mb-3" : "text-lg font-semibold text-gray-900 mb-3"}>
-                      Resultados de Búsqueda ({globalSearchResults.length})
-                    </h3>
-                    <div className={isDark ? "space-y-3 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-700" : "space-y-3 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"}>
-                      {globalSearchResults.map((result, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleModelSelect(result.categoryIndex, result.modelIndex)}
-                          className={
-                            isDark
-                              ? "w-full text-left p-4 rounded-lg transition bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600"
-                              : "w-full text-left p-4 rounded-lg transition bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
-                          }
-                        >
-                          <div className="font-medium text-sm mb-1">{result.model.title}</div>
-                          <div className={isDark ? "text-xs text-gray-400 flex items-center gap-1" : "text-xs text-gray-500 flex items-center gap-1"}>
-                            <span>{result.category.icon}</span>
-                            <span>{result.category.name}</span>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div
+        {/* Selector de categorías */}
+        <div className="flex justify-center mb-12">
+          <div className="flex overflow-x-auto pb-4 scrollbar-hide max-w-full">
+            <div className="flex space-x-2 md:space-x-3">
+              {productCategories.map((category, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    setSelectedCategory(index);
+                    setSelectedModel(0);
+                    setSearchTerm("");
+                  }}
                   className={
-                    hasGlobalSearchResults
-                      ? isDark
-                        ? "space-y-3 max-h-96 overflow-y-auto pr-2 opacity-50 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-700"
-                        : "space-y-3 max-h-96 overflow-y-auto pr-2 opacity-50 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                    selectedCategory === index
+                      ? "flex items-center space-x-2 px-4 py-3 rounded-lg transition whitespace-nowrap bg-blue-600 text-white"
                       : isDark
-                      ? "space-y-3 max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-700"
-                      : "space-y-3 max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                      ? "flex items-center space-x-2 px-4 py-3 rounded-lg transition whitespace-nowrap bg-gray-700 text-gray-300 hover:bg-gray-600"
+                      : "flex items-center space-x-2 px-4 py-3 rounded-lg transition whitespace-nowrap bg-white text-gray-700 border border-gray-200 hover:bg-gray-100"
                   }
                 >
-                  <h3 className={isDark ? "text-lg font-semibold text-white mb-3 sticky top-0 bg-gray-800 py-2" : "text-lg font-semibold text-gray-900 mb-3 sticky top-0 bg-white py-2"}>
-                    Modelos de {productCategories[selectedCategory].name}
-                    {!hasGlobalSearchResults && searchTerm && (
-                      <span className="text-sm font-normal text-gray-400 ml-2">
-                        ({filteredModels.length} de {productCategories[selectedCategory].models.length})
-                      </span>
-                    )}
-                  </h3>
-
-                  {!hasGlobalSearchResults && (
-                    <>
-                      {filteredModels.map((model, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setSelectedModel(index)}
-                          className={
-                            selectedModel === index
-                              ? "w-full text-left p-4 rounded-lg transition bg-blue-600 text-white"
-                              : isDark
-                              ? "w-full text-left p-4 rounded-lg transition bg-gray-700 text-gray-300 hover:bg-gray-600"
-                              : "w-full text-left p-4 rounded-lg transition bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
-                          }
-                        >
-                          <div className="font-medium text-sm">{model.title}</div>
-                        </button>
-                      ))}
-                      {filteredModels.length === 0 && searchTerm && (
-                        <div className={isDark ? "text-gray-400 text-center py-4" : "text-gray-500 text-center py-4"}>
-                          No se encontraron modelos en esta categoría.
-                        </div>
-                      )}
-                      {filteredModels.length === 0 && !searchTerm && (
-                        <div className={isDark ? "text-gray-400 text-center py-4" : "text-gray-500 text-center py-4"}>
-                          No hay modelos disponibles.
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:col-span-6">
-              <div className={isDark ? "bg-gray-800 rounded-xl p-6 border border-gray-700 h-full" : "bg-white rounded-xl p-6 border border-gray-200 h-full"}>
-                <div className={isDark ? "bg-gray-700 rounded-xl overflow-hidden border border-gray-600" : "bg-gray-100 rounded-xl overflow-hidden border border-gray-200"} style={{ height: "500px" }}>
-                  {/* @ts-ignore */}
-                  <model-viewer
-                    src={productCategories[currentCategory].models[currentSlide].modelUrl}
-                    alt={productCategories[currentCategory].models[currentSlide].title}
-                    auto-rotate
-                    camera-controls
-                    camera-orbit="0deg 75deg 105%"
-                    shadow-intensity="1"
-                    exposure="1.0"
-                    environment-image="neutral"
-                    style={{ width: "100%", height: "100%" }}
-                    loading="eager"
-                    reveal="auto"
-                  ></model-viewer>
-                </div>
-                <div className="mt-4 text-center">
-                  <div className={isDark ? "text-sm text-gray-400" : "text-sm text-gray-500"}>
-                    Viendo actualmente: <span className={isDark ? "text-white font-medium" : "text-gray-900 font-medium"}>{productCategories[selectedCategory].models[selectedModel].title}</span>
-                  </div>
-                  <div className={isDark ? "text-xs text-gray-500 flex items-center justify-center gap-1 mt-1" : "text-xs text-gray-400 flex items-center justify-center gap-1 mt-1"}>
-                    <span>{productCategories[selectedCategory].icon}</span>
-                    <span>{productCategories[selectedCategory].name}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:col-span-3 hidden lg:block">
-              <div className={isDark ? "bg-gray-800 rounded-xl p-6 border border-gray-700 h-full" : "bg-white rounded-xl p-6 border border-gray-200 h-full"}>
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-2xl">{productCategories[selectedCategory].icon}</span>
-                  <h2 className={isDark ? "text-xl font-bold text-white" : "text-xl font-bold text-gray-900"}>
-                    {productCategories[selectedCategory].models[selectedModel].title}
-                  </h2>
-                </div>
-
-                <p className={isDark ? "text-gray-300 mb-6 leading-relaxed text-sm" : "text-gray-700 mb-6 leading-relaxed text-sm"}>
-                  {productCategories[selectedCategory].models[selectedModel].description}
-                </p>
-
-                <div className="space-y-3 mb-8">
-                  <h4 className={isDark ? "text-lg font-semibold text-white mb-3" : "text-lg font-semibold text-gray-900 mb-3"}>Características Principales:</h4>
-                  {productCategories[selectedCategory].models[selectedModel].bullets.map((bullet, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <svg className={isDark ? "w-4 h-4 text-blue-400 mt-1 flex-shrink-0" : "w-4 h-4 text-blue-500 mt-1 flex-shrink-0"} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span className={isDark ? "text-gray-300 text-sm" : "text-gray-700 text-sm"}>{bullet}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <button className={isDark ? "w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition inline-flex items-center gap-2 justify-center border border-blue-500 cursor-pointer" : "w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition inline-flex items-center gap-2 justify-center cursor-pointer"}>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  Descargar PDF
+                  <span className="text-lg">{category.icon}</span>
+                  <span className="font-medium text-sm md:text-base">{category.name}</span>
                 </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Panel izquierdo - Búsqueda y lista */}
+          <div className="lg:col-span-3">
+            <div className={isDark ? "bg-gray-800 rounded-xl p-6 border border-gray-700 h-full" : "bg-white rounded-xl p-6 border border-gray-200 h-full"}>
+              <div className="mb-6">
+                <label htmlFor="search" className={isDark ? "block text-gray-300 font-medium mb-2" : "block text-gray-700 font-medium mb-2"}>
+                  Buscar Todos los Modelos
+                </label>
+                <input
+                  type="text"
+                  id="search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  placeholder="Buscar en todas las categorías..."
+                  className={
+                    isDark
+                      ? "w-full px-4 py-2 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700 text-white placeholder-gray-400"
+                      : "w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-900 placeholder-gray-400"
+                  }
+                />
+                <div className="flex gap-2 mt-2">
+                  <button onClick={() => setSearchTerm("")} className={isDark ? "text-xs text-gray-400 hover:text-gray-300 transition" : "text-xs text-gray-500 hover:text-gray-700 transition"}>
+                    Limpiar Búsqueda
+                  </button>
+                </div>
+              </div>
+
+              {/* Resultados de búsqueda global */}
+              {hasGlobalSearchResults && (
+                <div className="mb-6">
+                  <h3 className={isDark ? "text-lg font-semibold text-white mb-3" : "text-lg font-semibold text-gray-900 mb-3"}>
+                    Resultados de Búsqueda ({globalSearchResults.length})
+                  </h3>
+                  <div className={isDark ? "space-y-3 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-700" : "space-y-3 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"}>
+                    {globalSearchResults.map((result, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleModelSelect(result.categoryIndex, result.modelIndex)}
+                        className={
+                          isDark
+                            ? "w-full text-left p-4 rounded-lg transition bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600"
+                            : "w-full text-left p-4 rounded-lg transition bg-white text-gray-700 hover:bg-gray-50 border border-gray-200"
+                        }
+                      >
+                        <div className="font-medium text-sm mb-1">{result.model.title}</div>
+                        <div className={isDark ? "text-xs text-gray-400 flex items-center gap-1" : "text-xs text-gray-500 flex items-center gap-1"}>
+                          <span>{result.category.icon}</span>
+                          <span>{result.category.name}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Lista de modelos de la categoría actual */}
+              <div
+                className={
+                  hasGlobalSearchResults
+                    ? isDark
+                      ? "space-y-3 max-h-96 overflow-y-auto pr-2 opacity-50 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-700"
+                      : "space-y-3 max-h-96 overflow-y-auto pr-2 opacity-50 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                    : isDark
+                    ? "space-y-3 max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-700"
+                    : "space-y-3 max-h-96 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                }
+              >
+                <h3 className={isDark ? "text-lg font-semibold text-white mb-3 sticky top-0 bg-gray-800 py-2" : "text-lg font-semibold text-gray-900 mb-3 sticky top-0 bg-white py-2"}>
+                  Modelos de {productCategories[selectedCategory].name}
+                  {!hasGlobalSearchResults && searchTerm && (
+                    <span className="text-sm font-normal text-gray-400 ml-2">
+                      ({filteredModelsWithIndex.length} de {productCategories[selectedCategory].models.length})
+                    </span>
+                  )}
+                </h3>
+
+                {!hasGlobalSearchResults && (
+                  <>
+                    {filteredModelsWithIndex.map(({ model, originalIndex }) => (
+                      <button
+                        key={originalIndex}
+                        onClick={() => setSelectedModel(originalIndex)}
+                        className={
+                          selectedModel === originalIndex
+                            ? "w-full text-left p-4 rounded-lg transition bg-blue-600 text-white"
+                            : isDark
+                            ? "w-full text-left p-4 rounded-lg transition bg-gray-700 text-gray-300 hover:bg-gray-600"
+                            : "w-full text-left p-4 rounded-lg transition bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+                        }
+                      >
+                        <div className="font-medium text-sm">{model.title}</div>
+                      </button>
+                    ))}
+                    {filteredModelsWithIndex.length === 0 && searchTerm && (
+                      <div className={isDark ? "text-gray-400 text-center py-4" : "text-gray-500 text-center py-4"}>
+                        No se encontraron modelos en esta categoría.
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>
 
-          <div className="lg:hidden mt-8">
-            <div className={isDark ? "bg-gray-800 rounded-xl p-6 border border-gray-700" : "bg-white rounded-xl p-6 border border-gray-200"}>
+          {/* Panel central - Visor 3D */}
+          <div className="lg:col-span-6">
+            <div className={isDark ? "bg-gray-800 rounded-xl p-6 border border-gray-700 h-full" : "bg-white rounded-xl p-6 border border-gray-200 h-full"}>
+              <div className={isDark ? "bg-gray-700 rounded-xl overflow-hidden border border-gray-600" : "bg-gray-100 rounded-xl overflow-hidden border border-gray-200"} style={{ height: "500px" }}>
+                <model-viewer
+                  src={productCategories[selectedCategory].models[selectedModel].modelUrl}
+                  alt={productCategories[selectedCategory].models[selectedModel].title}
+                  auto-rotate
+                  camera-controls
+                  camera-orbit="0deg 75deg 105%"
+                  shadow-intensity="1"
+                  exposure="1.0"
+                  environment-image="neutral"
+                  style={{ width: "100%", height: "100%" }}
+                  loading="eager"
+                  reveal="auto"
+                ></model-viewer>
+              </div>
+              <div className="mt-4 text-center">
+                <div className={isDark ? "text-sm text-gray-400" : "text-sm text-gray-500"}>
+                  Viendo actualmente: <span className={isDark ? "text-white font-medium" : "text-gray-900 font-medium"}>{productCategories[selectedCategory].models[selectedModel].title}</span>
+                </div>
+                <div className={isDark ? "text-xs text-gray-500 flex items-center justify-center gap-1 mt-1" : "text-xs text-gray-400 flex items-center justify-center gap-1 mt-1"}>
+                  <span>{productCategories[selectedCategory].icon}</span>
+                  <span>{productCategories[selectedCategory].name}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Panel derecho - Detalles del modelo (Desktop) */}
+          <div className="lg:col-span-3 hidden lg:block">
+            <div className={isDark ? "bg-gray-800 rounded-xl p-6 border border-gray-700 h-full" : "bg-white rounded-xl p-6 border border-gray-200 h-full"}>
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-2xl">{productCategories[selectedCategory].icon}</span>
                 <h2 className={isDark ? "text-xl font-bold text-white" : "text-xl font-bold text-gray-900"}>
@@ -711,9 +679,45 @@ export default function OnePagerSite() {
             </div>
           </div>
         </div>
+
+        {/* Panel de detalles móvil */}
+        <div className="lg:hidden mt-8">
+          <div className={isDark ? "bg-gray-800 rounded-xl p-6 border border-gray-700" : "bg-white rounded-xl p-6 border border-gray-200"}>
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-2xl">{productCategories[selectedCategory].icon}</span>
+              <h2 className={isDark ? "text-xl font-bold text-white" : "text-xl font-bold text-gray-900"}>
+                {productCategories[selectedCategory].models[selectedModel].title}
+              </h2>
+            </div>
+
+            <p className={isDark ? "text-gray-300 mb-6 leading-relaxed text-sm" : "text-gray-700 mb-6 leading-relaxed text-sm"}>
+              {productCategories[selectedCategory].models[selectedModel].description}
+            </p>
+
+            <div className="space-y-3 mb-8">
+              <h4 className={isDark ? "text-lg font-semibold text-white mb-3" : "text-lg font-semibold text-gray-900 mb-3"}>Características Principales:</h4>
+              {productCategories[selectedCategory].models[selectedModel].bullets.map((bullet, index) => (
+                <div key={index} className="flex items-start gap-3">
+                  <svg className={isDark ? "w-4 h-4 text-blue-400 mt-1 flex-shrink-0" : "w-4 h-4 text-blue-500 mt-1 flex-shrink-0"} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className={isDark ? "text-gray-300 text-sm" : "text-gray-700 text-sm"}>{bullet}</span>
+                </div>
+              ))}
+            </div>
+
+            <button className={isDark ? "w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition inline-flex items-center gap-2 justify-center border border-blue-500 cursor-pointer" : "w-full bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition inline-flex items-center gap-2 justify-center cursor-pointer"}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Descargar PDF
+            </button>
+          </div>
+        </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
 
   if (currentPage === "catalogue") {
     return <CataloguePage isDark={isDark} onToggleTheme={() => setIsDark((prev) => !prev)} />;
